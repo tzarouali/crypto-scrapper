@@ -27,13 +27,10 @@ class CoinQueueConsumerService[F[_]: Concurrent: Timer: Parallel, E](
   private val routingKey   = RoutingKey(RabbitExchangeAndQueueNames.CoinScrap.ROUTING_KEY)
 
   private def parseExtraCoins(rawMessage: AmqpEnvelope[String])(implicit tid: TraceId): F[Unit] =
-    Sync[F]
-      .suspend {
-        for {
-          scrappedCoins <- ME.fromEither(CirceParser.decode[List[ScrappedCoinDetails]](rawMessage.payload))
-          _             <- tx.transact(scrappedCoins.parTraverse(coinService.createCoin))
-        } yield ()
-      }
+    for {
+      scrappedCoins <- ME.fromEither(CirceParser.decode[List[ScrappedCoinDetails]](rawMessage.payload))
+      _             <- tx.transact(scrappedCoins.parTraverse(coinService.createCoin))
+    } yield ()
 
   private def extractTraceIdHeader(headers: Map[String, AmqpFieldValue]): TraceId =
     headers

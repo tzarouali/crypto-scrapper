@@ -27,11 +27,11 @@ class CoinScrapperService[F[_]: Concurrent: Parallel: Timer](appConfig: AppConfi
       .evalMap { ids =>
         ids.toList.parTraverse { id =>
           val coinUri = appConfig.baseScrappingUri.value + id
-          logger.debug(s"Executing GET request to URI $coinUri")
           for {
             uri <- me.fromEither(
               Uri.fromString(coinUri).leftMap(e => BusinessError(s"Error creating URI ${e.message}"))
             )
+            _ = logger.debug(s"Executing GET request to URI $coinUri")
             details <- httpClient.expect[List[CoinLoreCoinDetails]](uri).recoverWith {
               case e => me.raiseError(UnexpectedError(s"Error retrieving coin details: ${e.getMessage}"))
             }
