@@ -2,26 +2,27 @@ ThisBuild / scalaVersion := "2.13.3"
 ThisBuild / version := "0.0.1"
 ThisBuild / organization := "com.github.tzarouali"
 
-val Http4sVersion        = "0.21.7"
-val CatsVersion          = "2.1.1"
-val CatsEffectVersion    = "2.1.4"
-val Fs2Version           = "2.4.3"
-val ScalaNewtypeVersion  = "0.4.4"
-val CirceVersion         = "0.13.0"
-val CirceConfigVersion   = "0.8.0"
-val LogbackVersion       = "1.2.3"
-val Fs2RabbitVersion     = "2.1.1"
-val JooqVersion          = "3.13.3"
-val PostgresVersion      = "42.2.16"
-val HikariVersion        = "3.4.5"
-val ScalaTestVersion     = "3.2.2"
-val CatsScalatestVersion = "3.0.8"
-val H2DatabaseVersion    = "1.4.200"
-val ScalamockVersion     = "5.0.0"
-val kindProjectorVersion = "0.11.0"
-val BetterMonadicVersion = "0.3.1"
-val Fs2CronVersion       = "0.2.2"
-val Cron4CirceVersion    = "0.6.0"
+val Http4sVersion         = "0.21.7"
+val CatsVersion           = "2.2.0"
+val CatsEffectVersion     = "2.2.0"
+val Fs2Version            = "2.4.4"
+val ScalaNewtypeVersion   = "0.4.4"
+val CirceVersion          = "0.13.0"
+val CirceConfigVersion    = "0.8.0"
+val LogbackVersion        = "1.2.3"
+val LogbackEncoderVersion = "6.4"
+val Fs2RabbitVersion      = "2.1.1"
+val JooqVersion           = "3.13.3"
+val PostgresVersion       = "42.2.16"
+val HikariVersion         = "3.4.5"
+val ScalaTestVersion      = "3.2.2"
+val CatsScalatestVersion  = "3.0.8"
+val H2DatabaseVersion     = "1.4.200"
+val ScalamockVersion      = "5.0.0"
+val kindProjectorVersion  = "0.11.0"
+val BetterMonadicVersion  = "0.3.1"
+val Fs2CronVersion        = "0.2.2"
+val Cron4CirceVersion     = "0.6.1"
 
 val genJooqModel = taskKey[Unit]("Generate JOOQ classes")
 val genJooqTask = Def.task {
@@ -87,7 +88,8 @@ lazy val root = (project in file("."))
       //
       // Logging
       //
-      "ch.qos.logback" % "logback-classic" % LogbackVersion,
+      "ch.qos.logback"       % "logback-classic"          % LogbackVersion,
+      "net.logstash.logback" % "logstash-logback-encoder" % LogbackEncoderVersion,
       //
       // Tests
       //

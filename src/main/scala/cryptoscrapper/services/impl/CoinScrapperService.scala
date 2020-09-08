@@ -22,8 +22,10 @@ class CoinScrapperService[F[_]: Concurrent: Parallel: Timer](appConfig: AppConfi
     val waitTime           = appConfig.server.secondsBetweenRequests.value.seconds
     val numberParallelReqs = appConfig.server.numberParallelHttpRequests.value
     Stream
-      .fixedRate(waitTime)
-      .zipRight(Stream.emits(coinIds).chunkN(numberParallelReqs))
+      .emits(coinIds)
+      .chunkN(numberParallelReqs)
+      .covary[F]
+      .metered(waitTime)
       .evalMap { ids =>
         ids.toList.parTraverse { id =>
           val coinUri = appConfig.baseScrappingUri.value + id
