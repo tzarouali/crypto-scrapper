@@ -27,6 +27,7 @@
             <timeZone>UTC</timeZone>
         </encoder>
     </appender>
+    <logger name="org.http4s.blazecore" level="WARN"/>
     <logger name="com.zaxxer.hikari" level="WARN"/>
     <logger name="org.http4s.blaze" level="WARN"/>
     <logger name="org.http4s.client" level="WARN"/>

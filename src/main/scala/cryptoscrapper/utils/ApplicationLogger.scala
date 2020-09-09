@@ -10,7 +10,7 @@ trait ApplicationLogger { self =>
 
     def debug(msg: String)(implicit tid: TraceId): Unit = {
       val logger = getLogger
-      if (logger.isDebugEnabled) logger.info(s"[Trace Id - ${tid.value}] $msg") else ()
+      if (logger.isDebugEnabled) logger.debug(s"[Trace Id - ${tid.value}] $msg") else ()
     }
 
     def info(msg: String)(implicit tid: TraceId): Unit = {
@@ -20,17 +20,17 @@ trait ApplicationLogger { self =>
 
     def warn(msg: String)(implicit tid: TraceId): Unit = {
       val logger = getLogger
-      if (logger.isWarnEnabled) logger.info(s"[Trace Id - ${tid.value}] $msg") else ()
+      if (logger.isWarnEnabled) logger.warn(s"[Trace Id - ${tid.value}] $msg") else ()
     }
 
     def error(msg: String)(implicit tid: TraceId): Unit = {
       val logger = getLogger
-      if (logger.isErrorEnabled) logger.info(s"[Trace Id - ${tid.value}] $msg") else ()
+      if (logger.isErrorEnabled) logger.error(s"[Trace Id - ${tid.value}] $msg") else ()
     }
 
     def error(msg: String, e: Throwable)(implicit tid: TraceId): Unit = {
       val logger = getLogger
-      if (logger.isErrorEnabled) logger.info(s"[Trace Id - ${tid.value}] $msg", e) else ()
+      if (logger.isErrorEnabled) logger.error(s"[Trace Id - ${tid.value}] $msg", e) else ()
     }
   }
 

@@ -19,13 +19,14 @@ class CoinScrapperService[F[_]: Concurrent: Parallel: Timer](appConfig: AppConfi
   final private val me = implicitly[MonadError[F, Throwable]]
 
   def scrapCoinDetails(coinIds: List[CoinId])(implicit tid: TraceId): F[List[ScrappedCoinDetails]] = {
-    val waitTime           = appConfig.server.secondsBetweenRequests.value.seconds
-    val numberParallelReqs = appConfig.server.numberParallelHttpRequests.value
+    val coinApiServiceTimeout = appConfig.server.scappingServiceTimeoutMillis.value.millis
+    val waitTimeBetweenReqs   = appConfig.server.secondsBetweenRequests.value.seconds
+    val numberParallelReqs    = appConfig.server.numberParallelHttpRequests.value
     Stream
       .emits(coinIds)
       .chunkN(numberParallelReqs)
       .covary[F]
-      .metered(waitTime)
+      .metered(waitTimeBetweenReqs)
       .evalMap { ids =>
         ids.toList.parTraverse { id =>
           val coinUri = appConfig.baseScrappingUri.value + id
@@ -34,9 +35,14 @@ class CoinScrapperService[F[_]: Concurrent: Parallel: Timer](appConfig: AppConfi
               Uri.fromString(coinUri).leftMap(e => BusinessError(s"Error creating URI ${e.message}"))
             )
             _ = logger.debug(s"Executing GET request to URI $coinUri")
-            details <- httpClient.expect[List[CoinLoreCoinDetails]](uri).recoverWith {
-              case e => me.raiseError(UnexpectedError(s"Error retrieving coin details: ${e.getMessage}"))
-            }
+            details <- httpClient
+              .expect[List[CoinLoreCoinDetails]](uri)
+              .runTimed(coinApiServiceTimeout, s"Timeout retrieving coin details. Waited $coinApiServiceTimeout")
+              .recoverWith {
+                case e =>
+                  logger.error(e.getMessage)
+                  me.raiseError(UnexpectedError(s"Error retrieving coin details: ${e.getMessage}"))
+              }
             d <- me.fromOption(details.headOption, BusinessError(s"No coin details returned from URI $coinUri"))
           } yield ScrappedCoinDetails(
             id = d.id,

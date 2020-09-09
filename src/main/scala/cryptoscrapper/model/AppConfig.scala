@@ -28,6 +28,7 @@ final case class Server(
   numberParallelHttpRequests: NumberParallelHttpRequests,
   secondsBetweenRequests: SecondsBetweenRequests,
   numberThreadsRabbitPool: NumberThreadsIoPool,
+  scappingServiceTimeoutMillis: ScappingServiceTimeoutMillis,
   numberThreadsDbPool: NumberThreadsDbPool
 )
 

@@ -39,10 +39,11 @@ package object newtypes {
   @newtype final case class TracingHeaderName(value: String)
   @newtype final case class TraceId(value: String)
   object TraceId {
-    def mk: TraceId      = TraceId(UUID.randomUUID().toString)
+    def mk: TraceId = TraceId(UUID.randomUUID().toString)
   }
   @newtype final case class RabbitHost(value: String)
   @newtype final case class RabbitPort(value: Int)
   @newtype final case class RabbitUser(value: String)
   @newtype final case class RabbitPass(value: String)
+  @newtype final case class ScappingServiceTimeoutMillis(value: Int)
 }

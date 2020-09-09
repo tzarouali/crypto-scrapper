@@ -39,8 +39,7 @@ class CoinScrapperJob[F[_]: Sync: ContextShift: Timer: Parallel](
               logger.debug("Running scrapping job")
               for {
                 scrappedCoins <- coinScrapperService.scrapCoinDetails(coinIds)
-                _ = logger.debug("Scrapping job finished")
-                _ = logger.debug("About to send message with scrapped coins")
+                _ = logger.debug("Scrapping job finished. About to send message with scrapped coins")
                 _ <- pub.apply(
                   AmqpMessage[String](
                     payload = scrappedCoins.asJson.noSpaces,
@@ -54,7 +53,7 @@ class CoinScrapperJob[F[_]: Sync: ContextShift: Timer: Parallel](
                 )
                 _ = logger.debug("Message successfully sent")
               } yield ()
-            }
+            }.handleErrorWith(_ => Stream(()))
           }
           .compile
           .drain
