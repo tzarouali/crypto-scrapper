@@ -53,7 +53,7 @@ class CoinScrapperJob[F[_]: Sync: ContextShift: Timer: Parallel](
                 )
                 _ = logger.debug("Message successfully sent")
               } yield ()
-            }.handleErrorWith(_ => Stream(()))
+            }.handleErrorWith(_ => Stream.empty)
           }
           .compile
           .drain
