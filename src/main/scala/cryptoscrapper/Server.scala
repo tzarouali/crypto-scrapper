@@ -1,7 +1,7 @@
 package cryptoscrapper
 
-import cats.{MonadError, Parallel}
 import cats.effect.{Blocker, ConcurrentEffect, ContextShift, ExitCode, IO, IOApp, Resource, Sync, Timer}
+import cats.{MonadError, Parallel}
 import com.zaxxer.hikari.HikariDataSource
 import cryptoscrapper.controllers.CoinScrapperController
 import cryptoscrapper.model.{AppConfig, ServerConfig}
@@ -11,7 +11,7 @@ import cryptoscrapper.queues.CoinQueueConsumerService
 import cryptoscrapper.repositories.impl.{PostgresCoinDetailsRepository, PostgresCoinRepository}
 import cryptoscrapper.services.impl.{CoinScrapperService, CoinService, Http4sHttpClient}
 import cryptoscrapper.tasks.CoinScrapperJob
-import cryptoscrapper.utils.{Constants, HikariConfigMaker, RabbitConfigMaker, TracingMiddleware}
+import cryptoscrapper.utils.{Constants, HikariCfg, RabbitCfg, TracingMiddleware}
 import dev.profunktor.fs2rabbit.interpreter.RabbitClient
 import io.circe.config.parser
 import org.http4s.client.blaze.BlazeClientBuilder
@@ -20,22 +20,20 @@ import org.http4s.server.blaze.BlazeServerBuilder
 import org.jooq.DSLContext
 
 import scala.concurrent.ExecutionContext.global
-import scala.util.Try
 
 object Server extends IOApp {
   def createServer[F[_]: ContextShift: ConcurrentEffect: Timer: Parallel]: Resource[F, ServerConfig[F]] = {
     val ME = implicitly[MonadError[F, Throwable]]
     for {
-      appConfig <- Resource.liftF(parser.decodeF[F, AppConfig]())
-      coinIdsToScrap <- Resource.liftF(
-        ME.fromTry(Try(appConfig.scrapCoinsJob.coinIds.split(",").toList.map(c => CoinId(c.trim.toInt))))
-      )
-      pools = new ThreadPools[F](appConfig)
-      blockingEC      <- pools.dbPool
-      rabbitEC        <- pools.rabbitPool
-      hikariConfig    <- Resource.liftF(Sync[F].delay(HikariConfigMaker.makeHikariConfig(appConfig)))
+      appConfig       <- Resource.liftF(parser.decodeF[F, AppConfig]())
+      coinIdsToScrap  <- Resource.liftF(ME.fromTry(appConfig.scrapCoinsJob.coinIds.toCoinIdList))
+      hikariConfig    <- Resource.liftF(Sync[F].delay(HikariCfg.makeHikariConfig(appConfig)))
       ds              <- Resource.liftF(Sync[F].delay(new HikariDataSource(hikariConfig)))
       blazehttpClient <- BlazeClientBuilder[F](global).resource
+      pools = new ThreadPools[F](appConfig)
+      blockingEC   <- pools.dbPool
+      rabbitEC     <- pools.rabbitPool
+      rabbitClient <- Resource.liftF(RabbitClient[F](RabbitCfg.mk(appConfig), Blocker.liftExecutionContext(rabbitEC)))
       httpClient             = new Http4sHttpClient[F](blazehttpClient)
       dbTransactor           = new HikariTransactor[F](ds)
       coinRepo               = new PostgresCoinRepository[F](Blocker.liftExecutionContext(blockingEC))
@@ -45,9 +43,6 @@ object Server extends IOApp {
       coinScrapperController = new CoinScrapperController[F, DSLContext](coinService, dbTransactor)
       httpApp = new TracingMiddleware[F](TracingHeaderName(Constants.TRACING_HEADER_NAMER))
         .middleware(coinScrapperController.router.orNotFound)
-      rabbitClient <- Resource.liftF(
-        RabbitClient[F](RabbitConfigMaker.mk(appConfig), Blocker.liftExecutionContext(rabbitEC))
-      )
 
       job = new CoinScrapperJob[F](
         appConfig.scrapCoinsJob.cronExpression,

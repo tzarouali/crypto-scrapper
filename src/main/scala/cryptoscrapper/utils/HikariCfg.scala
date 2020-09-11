@@ -3,7 +3,7 @@ package cryptoscrapper.utils
 import com.zaxxer.hikari.HikariConfig
 import cryptoscrapper.model.AppConfig
 
-object HikariConfigMaker {
+object HikariCfg {
   def makeHikariConfig(appConfig: AppConfig): HikariConfig = {
     val config = new HikariConfig()
     config.setJdbcUrl(appConfig.db.url.value)

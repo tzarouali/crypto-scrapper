@@ -4,7 +4,7 @@ import cats.data.NonEmptyList
 import cryptoscrapper.model.AppConfig
 import dev.profunktor.fs2rabbit.config.{Fs2RabbitConfig, Fs2RabbitNodeConfig}
 
-object RabbitConfigMaker {
+object RabbitCfg {
   def mk(appConfig: AppConfig): Fs2RabbitConfig = Fs2RabbitConfig(
     virtualHost = "/",
     nodes = NonEmptyList.one(

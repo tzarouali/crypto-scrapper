@@ -36,7 +36,7 @@ object Server {
   implicit val d: Decoder[Server] = deriveDecoder
 }
 
-final case class ScrapCoinsJobCronExpression(cronExpression: CronExpr, coinIds: String)
+final case class ScrapCoinsJobCronExpression(cronExpression: CronExpr, coinIds: CoinIds)
 
 object ScrapCoinsJobCronExpression {
   implicit val d: Decoder[ScrapCoinsJobCronExpression] = deriveDecoder

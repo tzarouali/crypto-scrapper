@@ -1,7 +1,5 @@
 package cryptoscrapper.utils
 
-import java.util.UUID
-
 import cats.Applicative
 import cats.data.Kleisli
 import cats.effect.Sync
@@ -22,7 +20,7 @@ class TracingMiddleware[F[_]: Sync](tracingHeaderName: TracingHeaderName) extend
     Kleisli { req =>
       val createId: F[(Request[F], TraceId)] =
         for {
-          id <- TraceId(UUID.randomUUID().toString).pure[F]
+          id <- TraceId.mk.pure[F]
           tr <- Sync[F].delay(req.putHeaders(Header(Constants.TRACING_HEADER_NAMER, id.toString)))
         } yield (tr, id)
 

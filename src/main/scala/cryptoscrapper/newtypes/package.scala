@@ -6,6 +6,8 @@ import io.circe.{Decoder, Encoder}
 import io.estatico.newtype.Coercible
 import io.estatico.newtype.macros.newtype
 
+import scala.util.Try
+
 package object newtypes {
 
   implicit def coercibleDecoder[A, B](
@@ -46,4 +48,7 @@ package object newtypes {
   @newtype final case class RabbitUser(value: String)
   @newtype final case class RabbitPass(value: String)
   @newtype final case class ScappingServiceTimeoutMillis(value: Int)
+  @newtype final case class CoinIds(value: String) {
+    def toCoinIdList: Try[List[CoinId]] = Try(value.split(",").toList.map(c => CoinId(c.trim.toInt)))
+  }
 }
