@@ -23,6 +23,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 
 
@@ -32,7 +33,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Coin extends TableImpl<CoinRecord> {
 
-    private static final long serialVersionUID = 1391849379;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>public.coin</code>
@@ -50,23 +51,24 @@ public class Coin extends TableImpl<CoinRecord> {
     /**
      * The column <code>public.coin.id</code>.
      */
-    public final TableField<CoinRecord, Integer> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("nextval('coin_id_seq'::regclass)", org.jooq.impl.SQLDataType.INTEGER)), this, "");
+    public final TableField<CoinRecord, Integer> ID = createField(DSL.name("id"), SQLDataType.INTEGER.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>public.coin.symbol</code>.
      */
-    public final TableField<CoinRecord, String> SYMBOL = createField(DSL.name("symbol"), org.jooq.impl.SQLDataType.VARCHAR(50).nullable(false), this, "");
+    public final TableField<CoinRecord, String> SYMBOL = createField(DSL.name("symbol"), SQLDataType.VARCHAR(50).nullable(false), this, "");
 
     /**
      * The column <code>public.coin.name</code>.
      */
-    public final TableField<CoinRecord, String> NAME = createField(DSL.name("name"), org.jooq.impl.SQLDataType.VARCHAR(50).nullable(false), this, "");
+    public final TableField<CoinRecord, String> NAME = createField(DSL.name("name"), SQLDataType.VARCHAR(50).nullable(false), this, "");
 
-    /**
-     * Create a <code>public.coin</code> table reference
-     */
-    public Coin() {
-        this(DSL.name("coin"), null);
+    private Coin(Name alias, Table<CoinRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private Coin(Name alias, Table<CoinRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
@@ -83,12 +85,11 @@ public class Coin extends TableImpl<CoinRecord> {
         this(alias, COIN);
     }
 
-    private Coin(Name alias, Table<CoinRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private Coin(Name alias, Table<CoinRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
+    /**
+     * Create a <code>public.coin</code> table reference
+     */
+    public Coin() {
+        this(DSL.name("coin"), null);
     }
 
     public <O extends Record> Coin(Table<O> child, ForeignKey<O, CoinRecord> key) {
@@ -102,7 +103,7 @@ public class Coin extends TableImpl<CoinRecord> {
 
     @Override
     public Identity<CoinRecord, Integer> getIdentity() {
-        return Keys.IDENTITY_COIN;
+        return (Identity<CoinRecord, Integer>) super.getIdentity();
     }
 
     @Override

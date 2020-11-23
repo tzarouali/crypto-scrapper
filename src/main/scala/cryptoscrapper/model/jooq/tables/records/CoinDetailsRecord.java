@@ -21,7 +21,7 @@ import org.jooq.impl.TableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CoinDetailsRecord extends TableRecordImpl<CoinDetailsRecord> implements Record4<Integer, Integer, BigDecimal, OffsetDateTime> {
 
-    private static final long serialVersionUID = 225126060;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>public.coin_details.coin_id</code>.
@@ -203,9 +203,9 @@ public class CoinDetailsRecord extends TableRecordImpl<CoinDetailsRecord> implem
     public CoinDetailsRecord(Integer coinId, Integer rank, BigDecimal priceUsd, OffsetDateTime created) {
         super(CoinDetails.COIN_DETAILS);
 
-        set(0, coinId);
-        set(1, rank);
-        set(2, priceUsd);
-        set(3, created);
+        setCoinId(coinId);
+        setRank(rank);
+        setPriceUsd(priceUsd);
+        setCreated(created);
     }
 }

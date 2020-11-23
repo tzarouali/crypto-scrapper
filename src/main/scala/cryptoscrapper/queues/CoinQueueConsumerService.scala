@@ -54,6 +54,9 @@ class CoinQueueConsumerService[F[_]: Concurrent: Timer: Parallel, E](
               case Left(_) =>
                 AckResult.NAck(msg.deliveryTag)
             }
+          case Some(h) =>
+            logger.warn(s"Unrecognized message. Type is: ${h.toValueWriterCompatibleJava}, payload is: ${msg.payload}")
+            AckResult.NAck(msg.deliveryTag).pure[F].widen[AckResult]
           case None =>
             logger.warn(s"Unrecognized message ${msg.payload}")
             AckResult.NAck(msg.deliveryTag).pure[F].widen[AckResult]

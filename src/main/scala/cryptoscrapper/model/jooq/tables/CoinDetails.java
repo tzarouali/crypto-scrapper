@@ -24,6 +24,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 
 
@@ -33,7 +34,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CoinDetails extends TableImpl<CoinDetailsRecord> {
 
-    private static final long serialVersionUID = -987122477;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>public.coin_details</code>
@@ -51,28 +52,29 @@ public class CoinDetails extends TableImpl<CoinDetailsRecord> {
     /**
      * The column <code>public.coin_details.coin_id</code>.
      */
-    public final TableField<CoinDetailsRecord, Integer> COIN_ID = createField(DSL.name("coin_id"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+    public final TableField<CoinDetailsRecord, Integer> COIN_ID = createField(DSL.name("coin_id"), SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * The column <code>public.coin_details.rank</code>.
      */
-    public final TableField<CoinDetailsRecord, Integer> RANK = createField(DSL.name("rank"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+    public final TableField<CoinDetailsRecord, Integer> RANK = createField(DSL.name("rank"), SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * The column <code>public.coin_details.price_usd</code>.
      */
-    public final TableField<CoinDetailsRecord, BigDecimal> PRICE_USD = createField(DSL.name("price_usd"), org.jooq.impl.SQLDataType.NUMERIC.nullable(false), this, "");
+    public final TableField<CoinDetailsRecord, BigDecimal> PRICE_USD = createField(DSL.name("price_usd"), SQLDataType.NUMERIC.nullable(false), this, "");
 
     /**
      * The column <code>public.coin_details.created</code>.
      */
-    public final TableField<CoinDetailsRecord, OffsetDateTime> CREATED = createField(DSL.name("created"), org.jooq.impl.SQLDataType.TIMESTAMPWITHTIMEZONE.nullable(false), this, "");
+    public final TableField<CoinDetailsRecord, OffsetDateTime> CREATED = createField(DSL.name("created"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).nullable(false), this, "");
 
-    /**
-     * Create a <code>public.coin_details</code> table reference
-     */
-    public CoinDetails() {
-        this(DSL.name("coin_details"), null);
+    private CoinDetails(Name alias, Table<CoinDetailsRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private CoinDetails(Name alias, Table<CoinDetailsRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
@@ -89,12 +91,11 @@ public class CoinDetails extends TableImpl<CoinDetailsRecord> {
         this(alias, COIN_DETAILS);
     }
 
-    private CoinDetails(Name alias, Table<CoinDetailsRecord> aliased) {
-        this(alias, aliased, null);
-    }
-
-    private CoinDetails(Name alias, Table<CoinDetailsRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
+    /**
+     * Create a <code>public.coin_details</code> table reference
+     */
+    public CoinDetails() {
+        this(DSL.name("coin_details"), null);
     }
 
     public <O extends Record> CoinDetails(Table<O> child, ForeignKey<O, CoinDetailsRecord> key) {

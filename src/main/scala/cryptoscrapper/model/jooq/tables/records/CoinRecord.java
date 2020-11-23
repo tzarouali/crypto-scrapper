@@ -19,7 +19,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CoinRecord extends UpdatableRecordImpl<CoinRecord> implements Record3<Integer, String, String> {
 
-    private static final long serialVersionUID = 1582640306;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>public.coin.id</code>.
@@ -174,8 +174,8 @@ public class CoinRecord extends UpdatableRecordImpl<CoinRecord> implements Recor
     public CoinRecord(Integer id, String symbol, String name) {
         super(Coin.COIN);
 
-        set(0, id);
-        set(1, symbol);
-        set(2, name);
+        setId(id);
+        setSymbol(symbol);
+        setName(name);
     }
 }
