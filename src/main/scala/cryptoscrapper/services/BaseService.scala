@@ -16,7 +16,7 @@ trait BaseService extends ApplicationLogger {
   ]: EntityDecoder[F, A] = jsonOf[F, A]
 
   implicit def jsonEncoder[
-    F[_]: Sync,
+    F[_],
     A: Encoder
   ]: EntityEncoder[F, A] = jsonEncoderOf[F, A]
 

@@ -14,7 +14,7 @@ import dev.profunktor.fs2rabbit.model._
 import fs2.Stream
 import io.circe.{parser => CirceParser}
 
-class CoinQueueConsumerService[F[_]: Concurrent: Timer: Parallel, E](
+class CoinQueueConsumerService[F[_]: Sync: Parallel, E](
   client: RabbitClient[F],
   coinService: CoinService[F, E],
   tx: DbTransactor[F, E]

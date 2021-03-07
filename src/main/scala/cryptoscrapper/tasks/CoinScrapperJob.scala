@@ -1,8 +1,7 @@
 package cryptoscrapper.tasks
 
-import cats.Parallel
 import cats.data.Kleisli
-import cats.effect.{ContextShift, Sync, Timer}
+import cats.effect.{Sync, Timer}
 import cats.implicits._
 import cron4s.expr.CronExpr
 import cryptoscrapper.model.rabbit.{RabbitExchangeAndQueueNames, RabbitMessageHeaders, RabbitMessageTypes}
@@ -16,7 +15,7 @@ import eu.timepit.fs2cron.awakeEveryCron
 import fs2.Stream
 import io.circe.syntax._
 
-class CoinScrapperJob[F[_]: Sync: ContextShift: Timer: Parallel](
+class CoinScrapperJob[F[_]: Sync: Timer](
   cronExpression: CronExpr,
   coinScrapperService: CoinScrapperService[F],
   rabbitClient: RabbitClient[F],

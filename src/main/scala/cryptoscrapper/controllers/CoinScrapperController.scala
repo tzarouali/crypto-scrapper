@@ -1,6 +1,5 @@
 package cryptoscrapper.controllers
 
-import cats.Parallel
 import cats.effect.Sync
 import cats.implicits._
 import cryptoscrapper.DbTransactor
@@ -11,7 +10,7 @@ import org.http4s.dsl.Http4sDsl
 import org.http4s.server.Router
 import org.http4s.{HttpRoutes, QueryParamDecoder}
 
-final class CoinScrapperController[F[_]: Sync: Parallel, E](
+final class CoinScrapperController[F[_]: Sync, E](
   coinService: CoinService[F, E],
   tx: DbTransactor[F, E]
 ) extends BaseController
